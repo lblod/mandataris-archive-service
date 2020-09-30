@@ -9,6 +9,8 @@ To add the service to your stack, add the following snippet to docker-compose.ym
 ```
 mandataris-archive:
   image: lblod/mandataris-archive-service:0.0.1
+  labels:
+      - "logging=true"
   restart: always
   logging: *default-logging
 ```
