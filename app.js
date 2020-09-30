@@ -24,7 +24,7 @@ app.post('/:uuid/archive', async function( req, res ) {
 
   try {
     console.log(`Archiving mandataris ${mandataris}`);
-    await moveMandatarisToGraveyardGraph(mandataris);
+    await copyMandatarisToGraveyardGraph(mandataris);
     await updateMandatarisType(mandataris);
     await addArchivingReason(mandataris);
     const duplicatedMandataris = await hasDuplicate(mandataris);
