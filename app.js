@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import flatten from 'lodash.flatten';
 import {
   getMandataris,
-  moveMandatarisToGraveyardGraph,
+  copyMandatarisToGraveyardGraph,
   updateMandatarisType,
   addArchivingReason,
   hasDuplicate,
