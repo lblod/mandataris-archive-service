@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import flatten from 'lodash.flatten';
 import {
   getMandataris,
-  copyMandatarisToGraveyardGraph,
+  moveMandatarisToGraveyardGraph,
   updateMandatarisType,
   addArchivingReason,
   hasDuplicate,
@@ -14,25 +14,27 @@ import {
 
 app.use(bodyParser.json({ type: function(req) { return /^application\/json/.test(req.get('content-type')); } }));
 
-app.post('/:uuid/archive', async function( req, res ) {
+app.delete('/:uuid/archive', async function( req, res ) {
   const mandataris = await getMandataris(req.params.uuid);
-
   if (!mandataris) {
     console.log(`Mandataris with uuid ${req.params.uuid} not found.`);
-    return res.status(204).send();
+    return res.status(404).send();
   }
 
   try {
     console.log(`Archiving mandataris ${mandataris}`);
-    await copyMandatarisToGraveyardGraph(mandataris);
-    await updateMandatarisType(mandataris);
-    await addArchivingReason(mandataris);
+    const result = await moveMandatarisToGraveyardGraph(mandataris);
+    if (!result) {
+      console.log(`The user doesn't have the rights to delete ${mandataris}`);
+    }
+    //await updateMandatarisType(mandataris);
+    //await addArchivingReason(mandataris);
     const duplicatedMandataris = await hasDuplicate(mandataris);
     if (duplicatedMandataris) {
       await moveDuplicationInfoTriplesToGraveyardGraph(duplicatedMandataris)
       await updateMandatarisInRelatedTriples(mandataris);
     } else {
-      await moveMandatarisRelationshipsToGraveyardGraph(mandataris);
+      //await moveMandatarisRelationshipsToGraveyardGraph(mandataris);
     }
   } catch (e) {
     console.log(`Something went wrong while handling deltas for mandataris ${mandataris}`);
@@ -43,7 +45,7 @@ app.post('/:uuid/archive', async function( req, res ) {
       }]
     }).end();
   }
-  return res.status(200).send();
+  return res.status(204).send();
 });
 
 app.use(errorHandler);
