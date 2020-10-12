@@ -1,6 +1,6 @@
 {
   "name": "mandataris-archive-service",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Microservice to archive mandatarissen",
   "main": "app.js",
   "scripts": {
